@@ -17,23 +17,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $submitter_id = $_SESSION['user_id'];
 
         // Get team_id from issue_team_mapping
-        $stmt = $conn->prepare("SELECT team_id FROM issue_team_mapping WHERE issue_type = ?");
-        $stmt->bind_param("s", $issue_type);
+        $stmt = $pdo->prepare("SELECT team_id FROM issue_team_mapping WHERE issue_type = :issue_type");
+        $stmt->bindValue(':issue_type', $issue_type, PDO::PARAM_STR);
         $stmt->execute();
-        $result = $stmt->get_result();
-        if ($team = $result->fetch_assoc()) {
+        if ($team = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $team_id = $team['team_id'];
-            $stmt = $conn->prepare("INSERT INTO tickets (issue_type, description, priority, submitter_id, team_id) VALUES (?, ?, ?, ?, ?)");
-            $stmt->bind_param("sssii", $issue_type, $description, $priority, $submitter_id, $team_id);
+            $stmt = $pdo->prepare("INSERT INTO tickets (issue_type, description, priority, submitter_id, team_id) VALUES (:issue_type, :description, :priority, :submitter_id, :team_id)");
+            $stmt->bindValue(':issue_type', $issue_type, PDO::PARAM_STR);
+            $stmt->bindValue(':description', $description, PDO::PARAM_STR);
+            $stmt->bindValue(':priority', $priority, PDO::PARAM_STR);
+            $stmt->bindValue(':submitter_id', $submitter_id, PDO::PARAM_INT);
+            $stmt->bindValue(':team_id', $team_id, PDO::PARAM_INT);
             if ($stmt->execute()) {
                 $success = "Ticket submitted successfully!";
             } else {
-                $error = "Error: " . $conn->error;
+                $error = "Error: " . implode(" ", $stmt->errorInfo());
             }
         } else {
             $error = "Invalid issue type.";
         }
-        $stmt->close();
+        $stmt->closeCursor();
     }
 }
 ?>

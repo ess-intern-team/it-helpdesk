@@ -10,11 +10,8 @@ $ticket_id = $_GET['ticket_id'] ?? null;
 $ticket = null;
 $error = '';
 
-// Validate ticket_id
-if (!$ticket_id || !filter_var($ticket_id, FILTER_VALIDATE_INT)) {
-    setFlashMessage('danger', t('ticket_not_found'));
-    redirect(isSubmitter() ? 'user_dashboard.php' : 'dashboard.php');
-}
+// Generate CSRF token
+$csrf_token = generateCsrfToken();
 
 try {
     // Fetch ticket details

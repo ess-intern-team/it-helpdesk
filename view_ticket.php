@@ -8,8 +8,6 @@ if (!isLoggedIn()) {
 
 $ticket_id = $_GET['ticket_id'] ?? null;
 $ticket = null;
-$comments = [];
-$status_history = [];
 $error = '';
 $success = '';
 
@@ -57,83 +55,12 @@ try {
         setFlashMessage('danger', t('ticket_not_found')); // Generic message for security
         redirect('user_dashboard.php');
     }
-
-    // Fetch comments
-    $stmtComments = $pdo->prepare("SELECT
-                                    c.comment_text,
-                                    c.created_at,
-                                    u.name AS commented_by
-                                FROM
-                                    comments c
-                                JOIN
-                                    users u ON c.author_id = u.user_id -- CHANGED THIS LINE: from c.user_id to c.author_id
-                                WHERE
-                                    c.ticket_id = :ticket_id
-                                ORDER BY
-                                    c.created_at ASC");
-    $stmtComments->bindParam(':ticket_id', $ticket_id, PDO::PARAM_INT);
-    $stmtComments->execute();
-    $comments = $stmtComments->fetchAll(PDO::FETCH_ASSOC);
-
-    // Fetch status history
-    $stmtHistory = $pdo->prepare("SELECT
-                                    sh.old_status,
-                                    sh.new_status,
-                                    sh.changed_at,
-                                    u.name AS changed_by
-                                FROM
-                                    status_history sh
-                                JOIN
-                                    users u ON sh.user_id = u.user_id
-                                WHERE
-                                    sh.ticket_id = :ticket_id
-                                ORDER BY
-                                    sh.changed_at ASC");
-    $stmtHistory->bindParam(':ticket_id', $ticket_id, PDO::PARAM_INT);
-    $stmtHistory->execute();
-    $status_history = $stmtHistory->fetchAll(PDO::FETCH_ASSOC);
-
-    // Handle comment submission
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_comment'])) {
-        if (!validateCsrfToken($_POST['csrf_token'] ?? '')) {
-            setFlashMessage('danger', t('invalid_csrf'));
-            redirect($_SERVER['REQUEST_URI']); // Redirect back to refresh page and clear form data
-        }
-
-        $comment_text = trim($_POST['comment_text'] ?? '');
-
-        if (empty($comment_text)) {
-            setFlashMessage('danger', t('comment_empty_error'));
-            redirect($_SERVER['REQUEST_URI']);
-        }
-
-        $pdo->beginTransaction();
-        try {
-            $stmtInsertComment = $pdo->prepare("INSERT INTO comments (ticket_id, author_id, comment_text) VALUES (:ticket_id, :author_id, :comment_text)"); // CHANGED THIS LINE: from user_id to author_id
-            $stmtInsertComment->bindParam(':ticket_id', $ticket_id, PDO::PARAM_INT);
-            $stmtInsertComment->bindParam(':author_id', $_SESSION['user_id'], PDO::PARAM_INT); // CHANGED THIS LINE: from user_id to author_id
-            $stmtInsertComment->bindParam(':comment_text', $comment_text, PDO::PARAM_STR);
-            $stmtInsertComment->execute();
-
-            // Update ticket's updated_at timestamp
-            $stmtUpdateTicket = $pdo->prepare("UPDATE tickets SET updated_at = NOW() WHERE ticket_id = :ticket_id");
-            $stmtUpdateTicket->bindParam(':ticket_id', $ticket_id, PDO::PARAM_INT);
-            $stmtUpdateTicket->execute();
-
-            $pdo->commit();
-            setFlashMessage('success', t('comment_added_successfully'));
-            redirect($_SERVER['REQUEST_URI']); // Reload to show new comment and clear form
-        } catch (PDOException $e) {
-            $pdo->rollBack();
-            setFlashMessage('danger', t('failed_to_add_comment') . ' ' . $e->getMessage()); // In production, just generic error
-            redirect($_SERVER['REQUEST_URI']);
-        }
-    }
 } catch (PDOException $e) {
     $error = t('database_error') . ': ' . $e->getMessage();
 }
 
-// Generate a new CSRF token for the form
+// Generate a new CSRF token for the form (kept for consistency)
+$csrf_token = generateCsrfToken();
 ?>
 
 <!DOCTYPE html>
@@ -206,7 +133,7 @@ try {
                                                 }
                                                 ?>"><?php echo htmlspecialchars($ticket['status']); ?></span>
                         </div>
-                        <div class="col-md-4"><strong><?php t('assigned_team'); ?>:</strong> <?php echo htmlspecialchars($ticket['assigned_team'] ?? t('unassigned')); ?></div>
+                        <div class="col-md-4"><strong><?php echo t('assigned_team'); ?>:</strong> <?php echo htmlspecialchars($ticket['assigned_team'] ?? t('unassigned')); ?></div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-6"><strong><?php echo t('created'); ?>:</strong> <?php echo htmlspecialchars($ticket['created_at']); ?></div>
@@ -214,66 +141,6 @@ try {
                     </div>
                 </div>
             </div>
-
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h5><i class="fas fa-comments me-2"></i> <?php echo t('comments'); ?></h5>
-                </div>
-                <div class="card-body">
-                    <?php if (empty($comments)) : ?>
-                        <p class="text-muted"><?php echo t('no_comments_yet'); ?></p>
-                    <?php else : ?>
-                        <div class="list-group">
-                            <?php foreach ($comments as $comment) : ?>
-                                <div class="list-group-item list-group-item-action flex-column align-items-start mb-2">
-                                    <div class="d-flex w-100 justify-content-between">
-                                        <h6 class="mb-1"><?php echo htmlspecialchars($comment['commented_by']); ?></h6>
-                                        <small class="text-muted"><?php echo htmlspecialchars($comment['created_at']); ?></small>
-                                    </div>
-                                    <p class="mb-1"><?php echo nl2br(htmlspecialchars($comment['comment_text'])); ?></p>
-                                </div>
-                            <?php endforeach; ?>
-                        </div>
-                    <?php endif; ?>
-
-                    <h6 class="mt-4 mb-3"><?php echo t('add_comment'); ?></h6>
-                    <form action="" method="POST">
-                        <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
-                        <div class="mb-3">
-                            <label for="comment_text" class="form-label visually-hidden"><?php echo t('comment'); ?></label>
-                            <textarea class="form-control" id="comment_text" name="comment_text" rows="3" placeholder="<?php echo t('enter_your_comment'); ?>" required></textarea>
-                        </div>
-                        <button type="submit" name="add_comment" class="btn btn-success"><i class="fas fa-comment-dots me-1"></i> <?php echo t('add_comment'); ?></button>
-                    </form>
-                </div>
-            </div>
-
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h5><i class="fas fa-history me-2"></i> <?php echo t('status_history'); ?></h5>
-                </div>
-                <div class="card-body">
-                    <?php if (empty($status_history)) : ?>
-                        <p class="text-muted"><?php echo t('no_status_changes_yet'); ?></p>
-                    <?php else : ?>
-                        <ul class="list-group">
-                            <?php foreach ($status_history as $history) : ?>
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    <span>
-                                        <?php echo htmlspecialchars($history['changed_by']); ?>
-                                        <?php echo t('changed_status_from'); ?>
-                                        <span class="badge bg-secondary"><?php echo htmlspecialchars($history['old_status']); ?></span>
-                                        <?php echo t('to'); ?>
-                                        <span class="badge bg-info"><?php echo htmlspecialchars($history['new_status']); ?></span>
-                                    </span>
-                                    <small class="text-muted"><?php echo htmlspecialchars($history['changed_at']); ?></small>
-                                </li>
-                            <?php endforeach; ?>
-                        </ul>
-                    <?php endif; ?>
-                </div>
-            </div>
-
         <?php endif; ?>
     </div>
 

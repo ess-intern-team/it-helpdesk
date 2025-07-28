@@ -4,9 +4,6 @@
 ?>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
     <div class="container-fluid">
-        <!-- <a class="navbar-brand" href="<?php echo isLoggedIn() ? ($_SESSION['role'] === 'admin' || $_SESSION['role'] === 'senior_officer' ? 'dashboard.php' : 'user_dashboard.php') : 'index.php'; ?>">
-            <img src="./assets/images/ESSA.png" alt="Logo" class="img-fluid" style="height: 40px;">
-        </a> -->
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -63,7 +60,7 @@
                                 </a>
                                 <ul class="dropdown-menu" aria-labelledby="navbarLanguageDropdown">
                                     <?php foreach ($available_languages as $code => $label) : ?>
-                                        <li><a class="dropdown-item <?php echo (($_SESSION['lang'] ?? 'en') == $code ? 'active' : ''); ?>" href="?lang=<?php echo $code; ?>"><?php echo htmlspecialchars($label); ?></a></li>
+                                        <li><a class="dropdown-item <?php echo (($_SESSION['lang'] ?? 'en') == $code ? 'active' : ''); ?>" href="?lang=<?php echo $code; ?><?php echo isset($_SERVER['QUERY_STRING']) && !empty($_SERVER['QUERY_STRING']) ? '&' . $_SERVER['QUERY_STRING'] : ''; ?>"><?php echo htmlspecialchars($label); ?></a></li>
                                     <?php endforeach; ?>
                                 </ul>
                             </li>
@@ -135,3 +132,32 @@
         });
     });
 </script>
+
+<style>
+    .avatar-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .dropdown-submenu {
+        position: relative;
+    }
+
+    .dropdown-submenu .dropdown-menu {
+        top: 0;
+        left: -100%;
+        margin-top: -1px;
+    }
+
+    [dir="rtl"] .dropdown-submenu .dropdown-menu {
+        left: auto;
+        right: -100%;
+    }
+
+    .navbar-dark .navbar-nav .nav-link.active {
+        color: #fff;
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+</style>

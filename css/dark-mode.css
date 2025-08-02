@@ -1,0 +1,131 @@
+/* assets/css/dark-mode.css */
+
+/* General Dark Mode Body and Elements */
+body.dark-mode {
+    background-color: #121212; /* Very dark background */
+    color: #e0e0e0; /* Light text color */
+}
+
+body.dark-mode header {
+    background-color: #1f1f1f; /* Darker header */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+}
+
+body.dark-mode nav ul li a {
+    color: #b0b0b0; /* Lighter link text */
+}
+
+body.dark-mode nav ul li a:hover,
+body.dark-mode nav ul li a.active {
+    background-color: #333; /* Darker hover background */
+}
+
+body.dark-mode main {
+    background-color: #121212; /* Keep main background consistent */
+}
+
+body.dark-mode footer {
+    background-color: #1f1f1f;
+    color: #b0b0b0;
+}
+
+body.dark-mode .container {
+    background-color: #1e1e1e; /* Dark container background */
+    box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+}
+
+body.dark-mode .form-group label {
+    color: #e0e0e0;
+}
+
+body.dark-mode .form-control {
+    background-color: #2b2b2b;
+    color: #e0e0e0;
+    border: 1px solid #444;
+}
+
+body.dark-mode .form-control:focus {
+    border-color: #007bff; /* Still use a bright accent */
+}
+
+body.dark-mode .btn {
+    background-color: #007bff; /* Keep primary button color */
+    color: #fff;
+}
+
+body.dark-mode .btn:hover {
+    background-color: #0056b3;
+}
+
+/* Dark Mode Profile Dropdown */
+body.dark-mode .profile-avatar-clickable {
+    border: 2px solid transparent;
+}
+body.dark-mode .profile-avatar-clickable:hover {
+    border-color: rgba(255,255,255,0.3);
+}
+
+body.dark-mode .dropdown-content {
+    background-color: #2b2b2b;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.4);
+}
+
+body.dark-mode .dropdown-content a,
+body.dark-mode .dropdown-content .language-switcher span {
+    color: #e0e0e0;
+}
+
+body.dark-mode .dropdown-content a:hover,
+body.dark-mode .dropdown-content .language-switcher:hover {
+    background-color: #444;
+}
+
+body.dark-mode .language-switcher select {
+    background-color: #333;
+    color: #e0e0e0;
+    border: 1px solid #555;
+}
+
+/* Dark Mode Profile Settings Page */
+body.dark-mode .profile-section {
+    background-color: #1f1f1f;
+    border: 1px solid #333;
+}
+
+body.dark-mode .current-profile-avatar {
+    border: 3px solid #007bff;
+}
+
+body.dark-mode hr {
+    background: #333;
+}
+
+/* Dark Mode Login Page */
+body.dark-mode .login-container {
+    background-color: #1e1e1e;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+}
+body.dark-mode .login-container h2 {
+    color: #e0e0e0;
+}
+body.dark-mode .login-container p {
+    color: #b0b0b0;
+}
+body.dark-mode .login-container a {
+    color: #8bb4e1;
+}
+body.dark-mode .login-container a:hover {
+    color: #a7d0ff;
+}
+
+/* Status messages in dark mode */
+body.dark-mode .status-message {
+    background-color: #2a3a2a; /* Darker green for success */
+    border: 1px solid #4a7a4a;
+    color: #c0ffc0;
+}
+body.dark-mode .status-message[style*="red"] {
+    background-color: #3a2a2a; /* Darker red for errors */
+    border: 1px solid #7a4a4a;
+    color: #ffc0c0;
+}

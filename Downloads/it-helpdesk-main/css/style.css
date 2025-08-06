@@ -1,0 +1,185 @@
+/* --- General Body and Container Styles --- */
+body {
+    font-family: Arial, sans-serif;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding-top: 70px; /* To prevent content from being hidden by the fixed navbar */
+}
+
+.container {
+    flex: 1;
+    max-width: 1200px;
+    margin: auto;
+    padding: 20px;
+}
+
+/* --- Theme Variables (centralized for both themes) --- */
+:root {
+    /* Light Theme */
+    --body-bg: #f8f9fa;
+    --text-color: #212529;
+    --heading-color: #000000;
+    --link-color: #007bff;
+    --link-hover-color: #0056b3;
+    --card-bg: #ffffff;
+    --card-border: #dee2e6;
+    --input-bg: #ffffff;
+    --input-border: #ced4da;
+    --dropdown-bg: #ffffff;
+    --dropdown-item-hover-bg: #e9ecef;
+    --table-header-bg: #e9ecef;
+    --footer-bg: #f8f9fa;
+    --footer-color: #6c757d;
+    --footer-border: #dee2e6;
+}
+
+/* --- Dark Theme Overrides for Variables --- */
+.dark-theme {
+    --body-bg: #121212;
+    --text-color: #e0e0e0;
+    --heading-color: #ffffff;
+    --link-color: #8ab4f8;
+    --link-hover-color: #c5e1ff;
+    --card-bg: #1e1e1e;
+    --card-border: #333333;
+    --input-bg: #2b2b2b;
+    --input-border: #444444;
+    --dropdown-bg: #2b2b2b;
+    --dropdown-item-hover-bg: #444444;
+    --table-header-bg: #343a40;
+    --footer-bg: #1e1e1e;
+    --footer-color: #cccccc;
+    --footer-border: #333333;
+}
+
+/* --- Global Element Styles (Applying Variables) --- */
+body {
+    background-color: var(--body-bg);
+    color: var(--text-color);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: var(--heading-color);
+}
+
+a {
+    color: var(--link-color);
+}
+
+a:hover {
+    color: var(--link-hover-color);
+}
+
+/* General Dark Theme Overrides for all pages */
+.dark-theme {
+    background-color: var(--body-bg) !important;
+    color: var(--text-color) !important;
+}
+
+.dark-theme .card,
+.dark-theme .alert,
+.dark-theme .list-group-item {
+    background-color: var(--card-bg) !important;
+    border-color: var(--card-border) !important;
+    color: var(--text-color) !important;
+}
+
+.dark-theme .form-control {
+    background-color: var(--input-bg) !important;
+    color: var(--text-color) !important;
+    border-color: var(--input-border) !important;
+}
+
+.dark-theme .form-control::placeholder { /* Style placeholder text in dark mode */
+    color: #888888;
+}
+
+.dark-theme .dropdown-menu {
+    background-color: var(--dropdown-bg) !important;
+    border-color: var(--card-border) !important;
+}
+
+.dark-theme .dropdown-item {
+    color: var(--text-color) !important;
+}
+
+.dark-theme .dropdown-item:hover,
+.dark-theme .dropdown-item:focus {
+    background-color: var(--dropdown-item-hover-bg) !important;
+    color: var(--text-color) !important;
+}
+
+/* --- Navbar Styles --- */
+.navbar {
+    transition: background-color 0.3s ease;
+}
+
+.dark-theme .navbar {
+    background-color: #343a40 !important;
+}
+
+.dark-theme .navbar-brand,
+.dark-theme .navbar-nav .nav-link,
+.dark-theme .dropdown-header {
+    color: #ffffff !important;
+}
+
+/* Custom nav-link styling with border */
+.nav-bordered-link {
+    border: 2px solid blue;
+    color: orange;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+}
+
+/* --- Table Styles for Dark Theme --- */
+.dark-theme .table {
+    color: var(--text-color);
+    background-color: var(--card-bg);
+    border-color: var(--card-border);
+}
+
+.dark-theme .table > :not(caption) > * > * {
+    background-color: var(--card-bg) !important;
+    color: var(--text-color) !important;
+    border-bottom-color: var(--card-border) !important;
+}
+
+.dark-theme .table-striped > tbody > tr:nth-of-type(odd) > * {
+    background-color: var(--bs-table-striped-bg) !important;
+}
+
+.dark-theme .table-hover > tbody > tr:hover > * {
+    background-color: var(--bs-table-hover-bg) !important;
+}
+
+.dark-theme .table thead th {
+    background-color: var(--table-header-bg) !important;
+    border-bottom-color: var(--card-border) !important;
+    color: var(--text-color) !important;
+}
+
+/* Ensure badges are styled correctly in dark mode */
+.dark-theme .badge {
+    color: #ffffff;
+}
+
+/* --- Footer Styles --- */
+.my-footer {
+    width: 100%;
+    text-align: center;
+    padding: 1rem;
+    margin-top: auto; /* Pushes the footer to the bottom */
+    border-top: 1px solid var(--footer-border);
+    background-color: var(--footer-bg);
+    color: var(--footer-color);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.dark-theme .my-footer {
+    background-color: var(--footer-bg) !important;
+    color: var(--footer-color) !important;
+    border-top-color: var(--footer-border) !important;
+}

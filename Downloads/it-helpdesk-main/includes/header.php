@@ -15,10 +15,10 @@
                             <a class="nav-link <?php echo (basename($_SERVER['PHP_SELF']) == 'dashboard.php') ? 'active' : ''; ?>" href="dashboard.php"><?php echo t('dashboard'); ?></a>
                         </li>
                     <?php endif; ?>
-                    <?php if (isSubmitter()) : // Show 'User Dashboard' for submitters
+                    <?php if (isSubmitter()) : // Show 'User Dashboard' for submitters 
                     ?>
                         <li class="nav-item">
-                            <a class="nav-link <?php echo (basename($_SERVER['PHP_SELF']) == 'user_dashboard.php') ? 'active' : ''; ?>" href="user_dashboard.php"><?php echo t('user_dashboard'); ?></a>
+                            <a class="nav-link <?php echo (basename($_SERVER['PHP_SELF']) == 'user_dashboard.php') ? 'active' : ''; ?> nav-bordered-link" href="user_dashboard.php"><?php echo t('User Dashboard'); ?></a>
                         </li>
                     <?php endif; ?>
                     <?php if (isAdmin()) : ?>
@@ -37,17 +37,17 @@
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink">
                             <li>
-                                <h6 class="dropdown-header"><?php echo t('logged_in_as'); ?> <?php echo htmlspecialchars($_SESSION['name']); ?></h6>
+                                <h6 class="dropdown-header"><?php echo t('Logged in as'); ?> <?php echo htmlspecialchars($_SESSION['name']); ?></h6>
                             </li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
                             <li><a class="dropdown-item" href="profile.php"><i class="fas fa-user-circle me-2"></i> <?php echo t('profile'); ?></a></li>
-                            <li><a class="dropdown-item" href="change_password.php"><i class="fas fa-key me-2"></i> <?php echo t('change_password'); ?></a></li>
+                            <li><a class="dropdown-item" href="change_password.php"><i class="fas fa-key me-2"></i> <?php echo t('Change Password'); ?></a></li>
 
                             <li>
                                 <div class="dropdown-item d-flex align-items-center">
-                                    <i class="fas fa-moon me-2"></i> <?php echo t('dark_theme'); ?>
+                                    <i class="fas fa-moon me-2"></i> <?php echo t('Dark Theme'); ?>
                                     <div class="form-check form-switch ms-auto">
                                         <input class="form-check-input" type="checkbox" id="darkThemeSwitch" <?php echo (($_SESSION['theme'] ?? 'light') == 'dark' ? 'checked' : ''); ?>>
                                     </div>
@@ -56,7 +56,7 @@
 
                             <li class="dropdown-submenu dropstart">
                                 <a class="dropdown-item dropdown-toggle" href="#" id="navbarLanguageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="fas fa-globe me-2"></i> <?php echo t('change_language'); ?>
+                                    <i class="fas fa-globe me-2"></i> <?php echo t('Change Language'); ?>
                                 </a>
                                 <ul class="dropdown-menu" aria-labelledby="navbarLanguageDropdown">
                                     <?php foreach ($available_languages as $code => $label) : ?>
@@ -83,55 +83,7 @@
         </div>
     </div>
 </nav>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Theme toggle logic (now just changes URL param, which config.php handles)
-        const darkThemeSwitch = document.getElementById('darkThemeSwitch');
-        if (darkThemeSwitch) {
-            darkThemeSwitch.addEventListener('change', function() {
-                const currentUrl = new URL(window.location.href);
-                const params = new URLSearchParams(currentUrl.search);
-
-                // Remove existing theme param to avoid duplicates
-                params.delete('theme');
-
-                if (this.checked) {
-                    params.set('theme', 'dark');
-                } else {
-                    params.set('theme', 'light');
-                }
-                currentUrl.search = params.toString();
-                window.location.href = currentUrl.toString(); // Reload page with new theme
-            });
-        }
-
-        // Bootstrap nested dropdown behavior for 'Change Language'
-        document.querySelectorAll('.dropdown-submenu > a').forEach(function(el) {
-            el.addEventListener('click', function(e) {
-                e.stopPropagation(); // Prevent main dropdown from closing
-                e.preventDefault(); // Prevent default link behavior
-                const nextUl = this.nextElementSibling;
-                if (nextUl && nextUl.classList.contains('dropdown-menu')) {
-                    // Close any other open submenus at the same level
-                    Array.from(this.closest('.dropdown-menu').querySelectorAll('.dropdown-submenu .dropdown-menu.show'))
-                        .filter(menu => menu !== nextUl)
-                        .forEach(menu => menu.classList.remove('show'));
-                    nextUl.classList.toggle('show'); // Toggle visibility of the clicked submenu
-                }
-            });
-        });
-
-        // Close all dropdowns when clicking outside
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('.dropdown')) { // If click is outside any dropdown
-                document.querySelectorAll('.dropdown-menu.show').forEach(function(menu) {
-                    menu.classList.remove('show');
-                });
-            }
-        });
-    });
-</script>
+<script src="js/script.js" defer></script>
 
 <style>
     .avatar-icon {

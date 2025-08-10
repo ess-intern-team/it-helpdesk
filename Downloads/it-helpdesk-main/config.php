@@ -129,14 +129,17 @@ function isSubmitter()
     return isLoggedIn() && ($_SESSION['role'] ?? '') === 'submitter';
 }
 
-function canManageTicket()
+/**
+ * Checks if the user is a specialist (e.g., Software, Hardware, etc.).
+ * @return bool
+ */
+function isSpecialist(): bool
 {
     if (!isLoggedIn()) {
         return false;
     }
-    $allowedRoles = [
-        'admin',
-        'senior_officer',
+    // Define the specialist roles
+    $specialistRoles = [
         'software_specialist',
         'hardware_specialist',
         'network_specialist',
@@ -144,8 +147,18 @@ function canManageTicket()
         'security_specialist',
         'support_specialist'
     ];
-    return in_array(strtolower($_SESSION['role'] ?? ''), $allowedRoles);
+    return in_array(strtolower($_SESSION['role'] ?? ''), $specialistRoles);
 }
+
+function canManageTicket()
+{
+    if (!isLoggedIn()) {
+        return false;
+    }
+    // Use the new isSpecialist function to simplify this check
+    return isAdmin() || isSeniorOfficer() || isSpecialist();
+}
+
 
 function getThemeClass()
 {
@@ -275,8 +288,6 @@ function formatDate($dateString)
     $date = new DateTime($dateString);
     return $date->format('M j, Y \a\t g:i A');
 }
-
-// Add to config.php (best placed near other security functions)
 
 /**
  * Generates and stores a CSRF token in session
